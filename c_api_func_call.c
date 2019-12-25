@@ -39,13 +39,10 @@ uint8_t _validateMacString(const char *mac_string)
 
 uint8_t is_existed_thread = 0;
 
-void _helloFunction(void *p)
+void *_helloFunction(void *p)
 {
-    while (1)
-    {
-        PRINT_D("enter hello world \n");
-        sleep(1);
-    }
+    PRINT_D("enter hello world \n");
+    pthread_exit(NULL);
 }
 
 uint8_t _createNewThread(pthread_t *thread_id)
@@ -62,7 +59,7 @@ uint8_t _createNewThread(pthread_t *thread_id)
         return ret;
     }
 
-    status = pthread_create(thread_id, NULL, (void*) _helloFunction, NULL);
+    status = pthread_create(thread_id, NULL, &_helloFunction, NULL);
     if (0 != status)
     {
         PRINT_D("Failed to create thread \n");
