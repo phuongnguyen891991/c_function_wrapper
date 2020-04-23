@@ -11,6 +11,44 @@
 
 #define PRINT_D(x, ...) fprintf( stdout, "%s:%s:%d: " x "\n", __FILE__, __func__, __LINE__, ##__VA_ARGS__)
 
+/** @ brief Allocate a chunk of 'n' bytes and return a pointer to it.
+ *
+ * If no memory can be allocated, this function exits immediately.
+ */
+static inline void *memalloc(size_t size)
+{
+    void *p;
+
+    p = malloc(size);
+
+    if (NULL == p)
+    {
+        fprintf(stderr, "ERROR: Out of memory!\n");
+        exit(1);
+    }
+
+    return p;
+}
+
+/** @brief Redimension a memory area previously obtained with memalloc().
+ *
+ * If no memory can be allocated, this function exits immediately.
+ */
+static inline void *memrealloc(void *ptr, size_t size)
+{
+    void *p;
+
+    p = realloc(ptr, size);
+
+    if (NULL == p)
+    {
+        fprintf(stderr, "ERROR: Out of memory!\n");
+        exit(1);
+    }
+
+    return p;
+}
+
 /*func: this function use to verify mac address
 * Input:
 *      mac_string: is the input mac address
