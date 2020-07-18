@@ -67,6 +67,69 @@ uint8_t _validateMacString(const char *mac_string)
     return RET_OK;
 }
 
+/*Function: to create api that can use to convert string to mac address
+* Input:
+*   input_str: macaddress in string format
+* output:
+*   out_mac: the out put is the macaddress in type of uint8_t
+*/
+
+int charToNumber(char character)
+{
+    if ((character >= '0') && (character <= '9'))
+        return (character - '0');
+
+    if ((character >= 'a') && (character <= 'f'))
+        return (character - 'a' + 10);
+
+    if ((character >= 'A') && (character <= 'F'))
+        return (character - 'A' + 10);
+
+    return -1;
+}
+
+uint8_t macStringArrayToNumber(const char *input_str, uint8_t *mac_addr)
+{
+    uint8_t i;
+    for (i = 0; i < 6; i++)
+    {
+        int tens, units;
+        tens = charToNumber(*input_str++);
+        if (tens < 0)
+            return -1;
+
+        units = charToNumber(*input_str++);
+        if (units < 0)
+            return -1;
+
+        *mac_addr++ = (tens << 4) | units;
+    }
+    return 0;
+}
+
+void convertStringToMac(const char *input_str, uint8_t *out_mac)
+{
+    int ret;
+
+    if((!input_str) || (strlen(input_str) != (MULTIAP_MAC_ADDRESS_STR_LEN-1)))
+    {
+        printf("[%s-%d] Input string should not null \n", __func__, __LINE__);
+    }
+    else
+    {
+        ret = macStringArrayToNumber(input_str, out_mac);
+        if(ret < 0)
+        {
+            PRINT_I("[%s-%d] Failed to convert mac \n", __func__, __LINE__);
+            memset(out_mac, 0, MULTIAP_MAC_ADDRESS_LEN);
+        }
+
+        PRINT_D("[%s-%d] The entry MAC:  %02X%02X%02X%02X%02X%02X \n", __func__, __LINE__,
+                                                                   out_mac[0], out_mac[1], out_mac[2],
+                                                                   out_mac[3], out_mac[4], out_mac[5]);
+    }
+}
+
 /*Function: to create new thread and check thread is already existed?
 * Input:
 *   thread_id: input parameter for tracking thread
